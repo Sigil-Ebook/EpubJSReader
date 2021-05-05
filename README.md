@@ -1,68 +1,23 @@
-Epub.js Reader
-================================
+**[Plugin] FuturePress EpubJSReader plugin for Sigil **
 
-![Demo](http://fchasen.com/futurepress/epubjs-reader_moby-dick.png)
+Updated: May 5, 2021
 
-[Try it while reading Moby Dick](http://futurepress.github.com/epubjs-reader/)
+Current Version: "0.1.0"
 
-About the Reader
--------------------------
+This plugin implements an epub3 reader for the epub currently being edited in Sigil.
+It uses PyQt5 and PyQtWebengine to create a browser like main window and then loads
+FuturePress's EpubJS epub reader project to implement the epub reader.
 
-[Epub.js](http://futurepress.github.com/epub.js/) library.
+See https://github.com/futurepress/epub.js/
+    https://github.com/futurepress/epubjs-reader/
+
+License/Copying: The EpubJS Reader code is covered by its own MIT License.
+
+License/Copying: The actual python code used to create this plugin is covered under the GNU LGPL Version 2 or Version 3, your choice.  Any other license terms are only available directly from the authors of Sigil in writing.
+
+Minimum Sigil Version: support for this plugin is provided for Sigil 1.6.0 and later using the Python 3.6 or later Python interpreter.
 
 
-Getting Started
--------------------------
+See the Sigil Plugin Index on MobileRead to find out more about this plugin and other plugins available for Sigil:
+https://www.mobileread.com/forums/showthread.php?t=247431
 
-Open up [reader/index.html](http://futurepress.github.com/epubjs-reader/index.html) in a browser.
-
-You can change the ePub it opens by passing a link to bookPath in the url:
-
-`?bookPath=https://s3.amazonaws.com/epubjs/books/alice.epub`
-
-Running Locally
--------------------------
-
-Install [node.js](http://nodejs.org/)
-
-Then install the project dependences with npm
-
-```javascript
-npm install
-```
-
-You can run the reader locally with the command
-
-```javascript
-node start
-```
-
-Builds are concatenated and minified using [gruntjs](http://gruntjs.com/getting-started)
-
-To generate a new build run
-
-```javascript
-grunt
-```
-
-Or, to generate builds as you make changes run
-
-```
-grunt watch
-```
-
-Additional Resources
--------------------------
-
-[Epub.js Developer Mailing List](https://groups.google.com/forum/#!forum/epubjs)
-
-IRC Server: freenode.net Channel: #epub.js
-
-Follow us on twitter: @Epubjs
-
-+ http://twitter.com/#!/Epubjs
-
-Other
--------------------------
-
-EPUB is a registered trademark of the [IDPF](http://idpf.org/).

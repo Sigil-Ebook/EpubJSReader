@@ -22,7 +22,7 @@ PLUGIN_FILES = ['reader',
             'reader_demo_v3.py',
             'ChangeLog.txt',
             'epub_js_license.txt',
-            'README.md',
+            'epubjs_README.md',
             'plugin.py',
             'plugin.xml',]
 
