@@ -24,7 +24,9 @@ PLUGIN_FILES = ['reader',
             'epub_js_license.txt',
             'epubjs_README.md',
             'plugin.py',
-            'plugin.xml',]
+            'plugin.xml',
+            'plugin.png',
+            'plugin.svg']
 
 def findVersion():
     _version_pattern = re.compile(r'<version>([^<]*)</version>')
