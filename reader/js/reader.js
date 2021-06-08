@@ -4313,8 +4313,7 @@ EPUBJS.reader.TocController = function(toc) {
             // convert href to be relative to the opf not ncx or nav
             var ahref = this.getAttribute('href');
             var basePath = book.packaging.navPath || book.packaging.ncxPath
-            var base = 'https://example.invalid/'
-            var url = new URL(ahref, base + basePath).href.replace(base, '')
+            var url = EPUBJS.core.resolveUrl(basePath, ahref)
 
 			event.preventDefault();
 

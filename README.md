@@ -2,7 +2,7 @@
 
 Updated: June 8, 2021
 
-Current Version: "0.3.0"
+Current Version: "0.3.1"
 
 This plugin implements an epub3 reader for the epub currently being edited in Sigil.
 It uses PyQt5 and PyQtWebengine to create a browser like main window and then loads

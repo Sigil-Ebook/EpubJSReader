@@ -1,3 +1,6 @@
+v031
+  - simplify bug fix to use existing functions in reader.js
+
 v030
   - bug fix to correct Toc navigation error as it needs opf relative paths
 

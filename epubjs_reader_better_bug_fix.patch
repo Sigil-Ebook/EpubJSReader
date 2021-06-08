@@ -1,6 +1,6 @@
---- reader/js/reader.js.orig	2021-06-08 09:45:16.000000000 -0400
-+++ reader/js/reader.js	2021-06-08 09:51:48.000000000 -0400
-@@ -4310,7 +4310,11 @@
+--- reader.js.orig	2021-06-08 10:17:52.000000000 -0400
++++ reader.js	2021-06-08 13:47:16.000000000 -0400
+@@ -4310,7 +4310,10 @@
  
  	$list.append(docfrag);
  	$list.find(".toc_link").on("click", function(event){
@@ -8,12 +8,11 @@
 +            // convert href to be relative to the opf not ncx or nav
 +            var ahref = this.getAttribute('href');
 +            var basePath = book.packaging.navPath || book.packaging.ncxPath
-+            var base = 'https://example.invalid/'
-+            var url = new URL(ahref, base + basePath).href.replace(base, '')
++            var url = EPUBJS.core.resolveUrl(basePath, ahref)
  
  			event.preventDefault();
  
-@@ -4344,4 +4348,4 @@
+@@ -4344,4 +4347,4 @@
  	};
  };
  
