@@ -4310,7 +4310,11 @@ EPUBJS.reader.TocController = function(toc) {
 
 	$list.append(docfrag);
 	$list.find(".toc_link").on("click", function(event){
-			var url = this.getAttribute('href');
+            // convert href to be relative to the opf not ncx or nav
+            var ahref = this.getAttribute('href');
+            var basePath = book.packaging.navPath || book.packaging.ncxPath
+            var base = 'https://example.invalid/'
+            var url = new URL(ahref, base + basePath).href.replace(base, '')
 
 			event.preventDefault();
 

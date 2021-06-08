@@ -1,3 +1,6 @@
+v030
+  - bug fix to correct Toc navigation error as it needs opf relative paths
+
 v020
   - added in plugin icons from BeckyEbook
   
