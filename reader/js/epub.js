@@ -10661,7 +10661,9 @@ class rendition_Rendition {
 
     let computed = contents.window.getComputedStyle(contents.content, null);
     let height = (contents.content.offsetHeight - (parseFloat(computed.paddingTop) + parseFloat(computed.paddingBottom))) * .95;
-    let horizontalPadding = parseFloat(computed.paddingLeft) + parseFloat(computed.paddingRight);
+    // need to subtract the gap in two page spread mode as columnWidth has already accounted for it
+    let horizontalPadding = parseFloat(computed.paddingLeft) + parseFloat(computed.paddingRight) - this._layout.gap;
+
     contents.addStylesheetRules({
       "img": {
         "max-width": (this._layout.columnWidth ? this._layout.columnWidth - horizontalPadding + "px" : "100%") + "!important",

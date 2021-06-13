@@ -1,3 +1,6 @@
+v040
+  - add patch to fix image max-width when in two page spread mode
+
 v031
   - simplify bug fix to use existing functions in reader.js
 

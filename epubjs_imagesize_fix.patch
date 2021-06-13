@@ -1,0 +1,13 @@
+--- epub.js.keep	2021-06-13 09:36:16.000000000 -0400
++++ epub.js	2021-06-13 09:36:26.000000000 -0400
+@@ -10661,7 +10661,9 @@
+ 
+     let computed = contents.window.getComputedStyle(contents.content, null);
+     let height = (contents.content.offsetHeight - (parseFloat(computed.paddingTop) + parseFloat(computed.paddingBottom))) * .95;
+-    let horizontalPadding = parseFloat(computed.paddingLeft) + parseFloat(computed.paddingRight);
++    // need to subtract the gap in two page spread mode as columnWidth has already accounted for it
++    let horizontalPadding = parseFloat(computed.paddingLeft) + parseFloat(computed.paddingRight) - this._layout.gap;
++
+     contents.addStylesheetRules({
+       "img": {
+         "max-width": (this._layout.columnWidth ? this._layout.columnWidth - horizontalPadding + "px" : "100%") + "!important",
