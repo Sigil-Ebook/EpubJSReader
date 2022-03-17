@@ -2,8 +2,8 @@
 # -*- coding: utf-8 -*-
 # vim:ts=4:sw=4:softtabstop=4:smarttab:expandtab
 
-# Copyright 2021 Kevin B. Hendricks, Stratford Ontario Canada
-# Copyright 2021 Doug Massay
+# Copyright 2021-2022 Kevin B. Hendricks, Stratford Ontario Canada
+# Copyright 2021-2022 Doug Massay
 
 # This plugin's source code is available under the GNU LGPL Version 2.1 or GNU LGPL Version 3 License.
 # See https://www.gnu.org/licenses/old-licenses/lgpl-2.1.en.html or
@@ -15,47 +15,18 @@ import argparse
 import tempfile, shutil
 import inspect
 
-try:
-    from PySide2.QtCore import *
-    from PySide2.QtWidgets import *
-    from PySide2.QtGui import *
-    from PySide2.QtWebEngineWidgets import QWebEnginePage, QWebEngineProfile, QWebEngineScript
-    from PySide2.QtWebEngineWidgets import QWebEngineSettings, QWebEngineView
-    print('Pyside2')
-except:
-    from PyQt5.QtCore import *
-    from PyQt5.QtWidgets import *
-    from PyQt5.QtGui import *
-    from PyQt5.QtWebEngineWidgets import QWebEnginePage, QWebEngineProfile, QWebEngineScript
-    from PyQt5.QtWebEngineWidgets import QWebEngineSettings, QWebEngineView
-    print('PyQt5')
-
+from plugin_utils import QtCore, QtWidgets
+from plugin_utils import QtWebEngineWidgets
+from plugin_utils import QWebEnginePage, QWebEngineProfile, QWebEngineScript, QWebEngineSettings
+from plugin_utils import PluginApplication, iswindows, ismacos
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
-
-_plat = sys.platform.lower()
-iswindows = 'win32' in _plat or 'win64' in _plat
-ismacos = isosx = 'darwin' in _plat
-
-def setup_highdpi(highdpi):
-    has_env_setting = False
-    env_vars = ('QT_AUTO_SCREEN_SCALE_FACTOR', 'QT_SCALE_FACTOR', 'QT_SCREEN_SCALE_FACTORS', 'QT_DEVICE_PIXEL_RATIO')
-    for v in env_vars:
-        if os.environ.get(v):
-            has_env_setting = True
-            break
-    if highdpi == 'on' or (highdpi == 'detect' and not has_env_setting):
-        QApplication.setAttribute(Qt.AA_EnableHighDpiScaling, True)
-    elif highdpi == 'off':
-        QApplication.setAttribute(Qt.AA_EnableHighDpiScaling, False)
-        for p in env_vars:
-            os.environ.pop(p, None)
 
 
 class WebPage(QWebEnginePage):
 
-    def __init__(self, parent=None):
-       QWebEnginePage.__init__(self, parent)
+    def __init__(self, profile, parent=None):
+       QWebEnginePage.__init__(self, profile, parent)
 
     def javaScriptConsoleMessage(self, level, msg, linenumber, source_id):
         prefix = {
@@ -83,27 +54,49 @@ class WebPage(QWebEnginePage):
         return False
 
 
-class WebView(QWebEngineView):
+class WebView(QtWebEngineWidgets.QWebEngineView):
 
     def __init__(self, parent=None):
-        QWebEngineView.__init__(self, parent)
+        QtWebEngineWidgets.QWebEngineView.__init__(self, parent)
+        app = PluginApplication.instance()
+        # Plugin prefs folder
+        pfolder = os.path.dirname(app.bk._w.plugin_dir) + '/plugins_prefs/' + app.bk._w.plugin_name
+        localstorepath = pfolder + '/local-storage'
+        if not os.path.exists(localstorepath):
+            try:
+                os.makedirs(localstorepath, 0o700)
+            except FileExistsError:
+                # directory already exists
+                pass
+        print(localstorepath)
+        w = app.primaryScreen().availableGeometry().width()
+        self._size_hint = QtCore.QSize(int(w/3), int(w/2))
+        # How to get bookid to add to QWebEngineProfile name?
+        self._profile = QWebEngineProfile('EpubJSReaderSigilPluginSettings')
+        # Set HTTP Cache type to memory only
+        self._profile.setHttpCacheType(QWebEngineProfile.MemoryHttpCache)
+        self._page = WebPage(self._profile, self)
+        self.setPage(self._page)
+        # Set this View's page settings
         s = self.settings();
         s.setAttribute(QWebEngineSettings.WebAttribute.JavascriptEnabled, True)
         s.setAttribute(QWebEngineSettings.WebAttribute.JavascriptCanOpenWindows, True)
         s.setAttribute(QWebEngineSettings.WebAttribute.JavascriptCanAccessClipboard, True)
         s.setAttribute(QWebEngineSettings.WebAttribute.LocalContentCanAccessFileUrls, True)
         s.setAttribute(QWebEngineSettings.WebAttribute.AllowWindowActivationFromJavaScript, True)
-        w = QApplication.instance().desktop().availableGeometry(self).width()
-        self._size_hint = QSize(int(w/3), int(w/2))
-        self._page = WebPage(self)
-        self.setPage(self._page)
+        # Save EpubJS prefs to plugin prefs
+        self._page.profile().setPersistentStoragePath(localstorepath)
+        print(self._page.profile().isOffTheRecord())
+        print(self._page.profile().cachePath())  # Verify that nothing gets written here
+        print(self._page.profile().httpCacheType())
+        print(self._page.profile().persistentStoragePath())
 
     def sizeHint(self):
         return self._size_hint
 
 
     
-class MainWindow(QMainWindow):
+class MainWindow(QtWidgets.QMainWindow):
 
     # constructor
     def __init__(self, query, prefs, *args, **kwargs):
@@ -128,7 +121,7 @@ class MainWindow(QMainWindow):
         
         # build url to launch readium with
         readerpath = os.path.join(SCRIPT_DIR,'reader','index.html')
-        bookurl = QUrl.fromLocalFile(readerpath)
+        bookurl = QtCore.QUrl.fromLocalFile(readerpath)
         bookurl.setQuery(self.query)
         self.browser.setUrl(bookurl)
 
@@ -141,7 +134,7 @@ class MainWindow(QMainWindow):
     def readsettings(self):
         b64val = self.prefs.get('geometry', None)
         if b64val:
-            self.restoreGeometry(QByteArray.fromBase64(QByteArray(b64val.encode('ascii'))))
+            self.restoreGeometry(QtCore.QByteArray.fromBase64(QtCore.QByteArray(b64val.encode('ascii'))))
 
     # method for updating the title of the window
     def update_title(self):
@@ -155,13 +148,13 @@ class MainWindow(QMainWindow):
         self.close()
 
     def resizeEvent(self, ev):
-        QMainWindow.resizeEvent(self, ev)
+        QtWidgets.QMainWindow.resizeEvent(self, ev)
         self.update_title()
 
     def closeEvent(self, ev):
         b64val = str(self.saveGeometry().toBase64(), 'ascii')
         self.prefs['geometry'] = b64val
-        QMainWindow.closeEvent(self, ev)
+        QtWidgets.QMainWindow.closeEvent(self, ev)
 
 
 # the plugin entry point
@@ -192,11 +185,14 @@ def run(bk):
         
     query = 'bookPath=books/' +  bookdir_name + '/'
 
+    '''
     if not ismacos:
         setup_highdpi(bk._w.highdpi)
+    '''
 
-    # creating a pyQt5 application
-    app = QApplication(sys.argv)
+    icon = os.path.join(bk._w.plugin_dir, bk._w.plugin_name, 'plugin.svg')
+    # creating a python qt application
+    app = PluginApplication(sys.argv, bk, app_icon=icon)
 
     # setting name to the application
     app.setApplicationName("FuturePress EpubJSReader")
