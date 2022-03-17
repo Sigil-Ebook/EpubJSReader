@@ -1,3 +1,7 @@
+v050
+  - support both Qt5 qnd Qt6 using the latest plugin_utils
+  - properly save plugin app settings between launches
+
 v040
   - add patch to fix image max-width when in two page spread mode
 
