@@ -1,8 +1,8 @@
 **[Plugin] FuturePress EpubJSReader plugin for Sigil **
 
-Updated: March 17, 2022
+Updated: August 2, 2023
 
-Current Version: "0.5.0"
+Current Version: "0.5.1"
 
 This plugin implements an epub3 reader for the epub currently being edited in Sigil.
 It uses PyQt5 and PyQtWebengine or PySide6 to create a browser like main window and then loads
